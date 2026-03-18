@@ -46,8 +46,9 @@ const connection = mysql.createPool(connectionString);
     if (!email || !password) {
       return res.status(400).json({ok: false, message:"invalid input"});
     }
-    const sql = 'SELECT * FROM users';
-    const [rows] = await connection.execute(sql);
+    const sql = 'SELECT * FROM users WHERE user_email = ?';
+    const [rows] = await connection.execute(sql, [email]);
+    if (rows.length === 0)  return res.status(401).json({ ok: false, message: "Invalid credentials" });
     const match = await bcrypt.compare(password, rows[0].user_password);
     if (email === rows[0].user_email && match) {
       const token = jwt.sign({email: rows[0].user_email}, JWT_SECRET, {expiresIn: '1h'});
