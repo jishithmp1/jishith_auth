@@ -11,9 +11,13 @@ app.use(cors());
 
 const JWT_SECRET = process.env.JWT_SECRET;
 const PORT = 3000;
-const connectionString = process.env.MYSQL_CONNECTION_URL;
 
-const connection = mysql.createPool(connectionString);
+const connection = mysql.createPool({
+  host: process.env.MYSQLHOST,
+  user: process.env.MYSQLUSER,
+  database: process.env.MYSQLDATABASE,
+  port: process.env.MYSQLPORT,
+});
 
   app.post("/create-user", async (req, res) => {
     try {
