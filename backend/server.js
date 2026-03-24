@@ -24,8 +24,8 @@ const pool = mysql.createPool({
     database: "mydb"
 });
 
-app.post("/signup", signup);
-app.post("/signin", signin);
+app.post("/api/signup", signup);
+app.post("/api/signin", signin);
 
 async function signup(req, res) {
     const { name, email, password } = req.body;
