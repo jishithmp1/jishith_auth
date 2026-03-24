@@ -5,13 +5,14 @@ const mysql = require("mysql2/promise");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { log } = require("node:console");
+const path = require("path");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}))
 
-app.use(express.static(path.join(_dirname, "../public"));
+app.use(express.static(path.join(__dirname, "../public")));
 
 
 const PORT = process.env.PORT || 3000;
@@ -38,7 +39,7 @@ async function signup(req, res) {
         const hashPassword = await bcrypt.hash(password, 10);
         let sql = "SELECT * FROM users WHERE user_email = ?";
         const [rows] = await pool.execute(sql, [email]);
-        if (rows[0].user_email === email) {
+        if (rows.length > 0) {
             return res.status(409).json({ok: false, message: "User already exists. Please login"});
         } else {
         sql = "INSERT INTO users (user_name, user_email, user_password) VALUES (?, ?, ?)";
@@ -62,8 +63,8 @@ async function signin(req, res) {
         let sql = "SELECT * FROM users WHERE user_email = ?";
         const [rows] = await pool.execute(sql, [email]);
         const row = rows[0];
-        const serverEmail = row.user_email;
-        const hashPassword = row.user_password;
+        const serverEmail = row?.user_email;
+        const hashPassword = row?.user_password;
         const match = await bcrypt.compare(password, hashPassword);
 
         if (match && serverEmail === email) {
